@@ -1,0 +1,9 @@
+{
+  "name": "express-graphql-apollo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
