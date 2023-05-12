@@ -1,23 +1,24 @@
-import { dataSourceConfig } from "./data-source";
-import { User } from "./entity/User";
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
+import { readFileSync } from "fs";
+import path from "path";
+import { UserQueries } from "./resolver";
 
-dataSourceConfig
-  .initialize()
-  .then(async () => {
-    console.log("Inserting a new user into the database...");
-    const user = new User();
-    user.firstName = "Timber";
-    user.lastName = "Saw";
-    user.age = 25;
-    await dataSourceConfig.manager.save(user);
-    console.log("Saved a new user with id: " + user.id);
+const resolvers = {
+  Query: {
+    ...UserQueries,
+  },
+};
 
-    console.log("Loading users from the database...");
-    const users = await dataSourceConfig.manager.find(User);
-    console.log("Loaded users: ", users);
+const typeDefs = readFileSync(path.resolve("./schema.graphql")).toString(
+  "utf-8"
+);
 
-    console.log(
-      "Here you can setup and run express / fastify / any other framework."
-    );
-  })
-  .catch((error) => console.log(error));
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
+
+startStandaloneServer(server, {
+  listen: { port: 3000 },
+}).then(({ url }) => console.log(`🚀 server ready at: ${url}`));
